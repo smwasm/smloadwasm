@@ -18,12 +18,3 @@ smcore = "0.1.0"
 # smcore = { path = "../smcore" }
 smdton = "0.1.0"
 # smdton = { path = "../smdton" }
-
-[wasmtime]
-version = "18.0.3"
-features = []
-optional = true
-
-[features]
-default = []
-wasmtime-runtime = ["wasmtime"]
