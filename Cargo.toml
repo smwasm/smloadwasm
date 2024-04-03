@@ -10,7 +10,7 @@ description = "SmartModule Library for Loading Wasm"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-version = "18.0.3"
+wasmtime = "18.0.3"
 features = []
 optional = true
 
@@ -21,6 +21,11 @@ smcore = "0.1.0"
 # smcore = { path = "../smcore" }
 smdton = "0.1.0"
 # smdton = { path = "../smdton" }
+
+[wasmtime]
+version = "18.0.3"
+features = []
+optional = true
 
 [features]
 default = []
