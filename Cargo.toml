@@ -2,6 +2,10 @@
 name = "smloadwasm"
 version = "0.1.0"
 edition = "2021"
+authors = ["smwasm@outlook.com"]
+repository = "https://github.com/smwasm/smloadwasm.git"
+license = "Apache-2.0"
+description = "SmartModule Library for Loading Wasm"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -10,5 +14,7 @@ wasmtime = "18.0.2"
 lazy_static = "1.4.0"
 json = "0.12.4"
 
-smcore = { path = "../smcore" }
-smdton = { path = "../smdton" }
+smcore = "0.1.0"
+# smcore = { path = "../smcore" }
+smdton = "0.1.0"
+# smdton = { path = "../smdton" }
