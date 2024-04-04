@@ -10,8 +10,7 @@ description = "SmartModule Library for Loading Wasm"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-wasmtime = "18.0.3"
-wasmtime-runtime = "18.0.3"
+wasmtime = { version = "18.0.3", features = ["runtime"] }
 lazy_static = "1.4.0"
 json = "0.12.4"
 
