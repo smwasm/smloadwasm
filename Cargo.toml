@@ -11,6 +11,7 @@ description = "SmartModule Library for Loading Wasm"
 
 [dependencies]
 wasmtime = "18.0.3"
+wasmtime-runtime = "18.0.3"
 lazy_static = "1.4.0"
 json = "0.12.4"
 
