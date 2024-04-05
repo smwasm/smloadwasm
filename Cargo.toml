@@ -1,6 +1,6 @@
 [package]
 name = "smloadwasm"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["smwasm@outlook.com"]
 repository = "https://github.com/smwasm/smloadwasm.git"
@@ -13,10 +13,10 @@ description = "SmartModule Library for Loading Wasm"
 lazy_static = "1.4.0"
 json = "0.12.4"
 
-smcore = "0.1.0"
-# smcore = { path = "../smcore" }
-smdton = "0.1.0"
-# smdton = { path = "../smdton" }
+smcore = "0.1.1"
+# smcore = { path = "../smcore" } ## switch
+smdton = "0.1.1"
+# smdton = { path = "../smdton" } ## switch
 
 [dependencies.wasmtime]
 version = "17.0.0"
