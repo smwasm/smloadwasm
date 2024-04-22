@@ -1,1 +1,3 @@
 # smloadwasm
+
+![](doc/smloadwasm.png)
