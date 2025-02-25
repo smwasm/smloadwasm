@@ -7,7 +7,7 @@ use lazy_static::lazy_static;
 use smcore::{smh, smu};
 
 use crate::wasm::{WS_ENV, WS_INA, WS_INM};
-use smdton::{SmDtonBuffer, SmDtonMap, SmDtonPair, SmDtonReader};
+use smdton::{SmDtonBuffer, SmDtonMap, SmDtonReader};
 
 lazy_static! {
     // $usage to sn
@@ -15,7 +15,9 @@ lazy_static! {
     pub static ref JS_EMP: JsonValue = json::parse("{}").unwrap();
 }
 
-static SM_PREFIX: &str = "smwasm";
+const SM_PREFIX: &str = "smwasm";
+const SMKER_GET_ALL: &str = "smker.get.all";
+const USAGE: &str = "$usage";
 
 pub fn load_wasm(_wp: &str, pagenum: i32) -> bool {
     if !WS_ENV.check_instance(&_wp, pagenum) {
@@ -28,11 +30,11 @@ pub fn load_wasm(_wp: &str, pagenum: i32) -> bool {
     }
 
     let mut smp = SmDtonMap::new();
-    smp.add_string("$usage", "smker.get.all");
+    smp.add_string(USAGE, SMKER_GET_ALL);
     let smb = smp.build();
     if let Some(a) = WS_INA.get(sn as usize) {
         if let Some(inst) = a {
-            let ptr = inst.set_input("smker.get.all", &smb);
+            let ptr = inst.set_input(SMKER_GET_ALL, &smb);
             let out_smb = inst.call(ptr);
 
             let rd = SmDtonReader::new(out_smb.get_buffer());
@@ -40,11 +42,11 @@ pub fn load_wasm(_wp: &str, pagenum: i32) -> bool {
             match opall {
                 Some(jsn) => {
                     for x in jsn.entries() {
-                        if x.0 == "smker.get.all" {
+                        if x.0 == SMKER_GET_ALL {
                             continue;
                         }
                         let mut smp = SmDtonMap::new();
-                        smp.add_string("$usage", x.0);
+                        smp.add_string(USAGE, x.0);
                         smp.add_from_json(x.1);
                         smh.register(smp.build(), _sm_call_outside);
                         {
@@ -76,14 +78,14 @@ pub fn call_wasm(sn: i32, name: &str, _input: &SmDtonBuffer) -> SmDtonBuffer {
     return SmDtonBuffer::new();
 }
 
-fn _sm_call_outside(_input: &SmDtonPair) -> SmDtonBuffer {
+fn _sm_call_outside(_input: &SmDtonBuffer) -> SmDtonBuffer {
     let map = WS_NAM.read().unwrap();
-    let smp = SmDtonReader::new(_input.raw.get_buffer());
-    let name = smp.get_string(1, "$usage").unwrap();
+    let smp = SmDtonReader::new(_input.get_buffer());
+    let name = smp.get_string(1, USAGE).unwrap();
     let op = map.get(name);
     if op.is_some() {
         let sn = *op.unwrap();
-        return call_wasm(sn, name, &_input.update);
+        return call_wasm(sn, name, &_input);
     }
 
     return SmDtonBuffer::new();
@@ -91,7 +93,7 @@ fn _sm_call_outside(_input: &SmDtonPair) -> SmDtonBuffer {
 
 pub fn _sm_init() {
     smu.log(&format!(
-        "--- sm init --- {} --- {} ---",
+        "--- sm init --- from smloadwasm --- {} --- {} ---",
         SM_PREFIX, "SmWasm"
     ));
 }

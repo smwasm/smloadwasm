@@ -27,7 +27,7 @@ pub struct WasmStoreStub {
 
 impl WasmStoreStub {
     fn new(id: usize) -> Self {
-        let wsta = WasmState { sn: id };
+        let wsta = WasmState {};
 
         let wimp = WS_IMP[id].as_ref().unwrap();
 
@@ -63,6 +63,51 @@ impl WasmStoreStub {
                     return wimp.hostcallsm(_caller, _d1 as usize);
                 },
             ),
+        );
+
+        // for wbindgen
+        fmap.insert(
+            "__wbindgen_init_externref_table[0]".to_string(),
+            Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>| {
+                println!("--- host func --- __wbindgen_init_externref_table ---");
+            }),
+        );
+
+        //
+        fmap.insert(
+            "sched_yield[0]".to_string(),
+            Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>| -> i32 {
+                println!("--- host func --- sched_yield ---");
+                return 0;
+            }),
+        );
+        fmap.insert(
+            "args_get[2]".to_string(),
+            Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32| -> i32 {
+                println!("--- host func --- args_get ---");
+                return 0;
+            }),
+        );
+        fmap.insert(
+            "args_sizes_get[2]".to_string(),
+            Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32| -> i32 {
+                println!("--- host func --- args_sizes_get ---");
+                return 0;
+            }),
+        );
+        fmap.insert(
+            "random_get[2]".to_string(),
+            Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32| -> i32 {
+                println!("--- host func --- random_get ---");
+                return 0;
+            }),
+        );
+        fmap.insert(
+            "poll_oneoff[4]".to_string(),
+            Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32, _p3: i32, _p4: i32| -> i32 {
+                println!("--- host func --- poll_oneoff ---");
+                return 0;
+            }),
         );
 
         // for wasi

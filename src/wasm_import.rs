@@ -20,7 +20,6 @@ lazy_static! {
 }
 
 pub struct WasmState {
-    pub sn: usize,
 }
 
 pub struct WasmImportSupport {
@@ -62,7 +61,7 @@ impl WasmImportSupport {
                 let callobj = json::parse(&calltxt).unwrap();
                 let usage = smu.get_string(&callobj, "$usage").unwrap();
                 let mut sb = SmDtonBuilder::new_from_json(&callobj);
-                let _ret = smh.call(&usage, sb.build());
+                let _ret = smh.call(sb.build());
 
                 if let Some(a) = WS_INA.get(self.sn) {
                     if let Some(inst) = a {
@@ -75,7 +74,7 @@ impl WasmImportSupport {
             let (name, smb) = WS_UTL.get_buffer_smb(_caller.as_context_mut(), mem, ptr);
 
             if smb.buf.len() > 0 {
-                let ret = smh.call(&name, smb);
+                let ret = smh.call(smb);
 
                 if let Some(a) = WS_INA.get(self.sn) {
                     if let Some(inst) = a {
