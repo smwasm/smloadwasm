@@ -7,6 +7,8 @@ use lazy_static::lazy_static;
 use crate::wasm_import::{WasmState, WS_IMP};
 use crate::wasm_util::{MAX_STORE, WS_UTL};
 
+use smcore::{smu};
+
 const STO_REPEAT_VALUE: Option<WasmStoreStub> = None;
 
 lazy_static! {
@@ -69,7 +71,13 @@ impl WasmStoreStub {
         fmap.insert(
             "__wbindgen_init_externref_table[0]".to_string(),
             Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>| {
-                println!("--- host func --- __wbindgen_init_externref_table ---");
+                smu.log("--- host func --- __wbindgen_init_externref_table ---");
+            }),
+        );
+        fmap.insert(
+            "__wbindgen_throw[2]".to_string(),
+            Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32| {
+                smu.log("--- host func --- __wbindgen_throw ---");
             }),
         );
 
@@ -77,35 +85,35 @@ impl WasmStoreStub {
         fmap.insert(
             "sched_yield[0]".to_string(),
             Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>| -> i32 {
-                println!("--- host func --- sched_yield ---");
+                smu.log("--- host func --- sched_yield ---");
                 return 0;
             }),
         );
         fmap.insert(
             "args_get[2]".to_string(),
             Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32| -> i32 {
-                println!("--- host func --- args_get ---");
+                smu.log("--- host func --- args_get ---");
                 return 0;
             }),
         );
         fmap.insert(
             "args_sizes_get[2]".to_string(),
             Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32| -> i32 {
-                println!("--- host func --- args_sizes_get ---");
+                smu.log("--- host func --- args_sizes_get ---");
                 return 0;
             }),
         );
         fmap.insert(
             "random_get[2]".to_string(),
             Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32| -> i32 {
-                println!("--- host func --- random_get ---");
+                smu.log("--- host func --- random_get ---");
                 return 0;
             }),
         );
         fmap.insert(
             "poll_oneoff[4]".to_string(),
             Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32, _p3: i32, _p4: i32| -> i32 {
-                println!("--- host func --- poll_oneoff ---");
+                smu.log("--- host func --- poll_oneoff ---");
                 return 0;
             }),
         );
@@ -116,7 +124,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32| -> i32 {
-                    println!("--- host func --- emscripten_resize_heap ---");
+                    smu.log("--- host func --- emscripten_resize_heap ---");
                     return 0;
                 },
             ),
@@ -126,7 +134,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32, _p3: i32| {
-                    println!("--- host func --- emscripten_memcpy_js ---");
+                    smu.log("--- host func --- emscripten_memcpy_js ---");
                 },
             ),
         );
@@ -135,7 +143,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32, _p3: i32, _p4: i32| -> i32 {
-                    println!("--- host func --- fd_write ---");
+                    smu.log("--- host func --- fd_write ---");
                     return 0;
                 },
             ),
@@ -145,7 +153,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32, _p3: i32, _p4: i32| -> i32 {
-                    println!("--- host func --- fd_read ---");
+                    smu.log("--- host func --- fd_read ---");
                     return 0;
                 },
             ),
@@ -155,7 +163,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32| -> i32 {
-                    println!("--- host func --- fd_close ---");
+                    smu.log("--- host func --- fd_close ---");
                     return 0;
                 },
             ),
@@ -165,7 +173,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i64, _p3: i32, _p4: i32| -> i32 {
-                    println!("--- host func --- fd_seek ---");
+                    smu.log("--- host func --- fd_seek ---");
                     return 0;
                 },
             ),
@@ -181,7 +189,7 @@ impl WasmStoreStub {
                  _p4: i32,
                  _p5: i32|
                  -> i32 {
-                    println!("--- host func --- fd_seek ---");
+                    smu.log("--- host func --- fd_seek ---");
                     return 0;
                 },
             ),
@@ -189,7 +197,7 @@ impl WasmStoreStub {
         fmap.insert(
             "abort[0]".to_string(),
             Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>| {
-                println!("--- host func --- abort ---");
+                smu.log("--- host func --- abort ---");
             }),
         );
         fmap.insert(
@@ -197,7 +205,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32| -> i32 {
-                    println!("--- host func --- environ_sizes_get ---");
+                    smu.log("--- host func --- environ_sizes_get ---");
                     return 0;
                 },
             ),
@@ -207,7 +215,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32| -> i32 {
-                    println!("--- host func --- environ_get ---");
+                    smu.log("--- host func --- environ_get ---");
                     return 0;
                 },
             ),
@@ -223,7 +231,7 @@ impl WasmStoreStub {
                  _p4: i32,
                  _p5: i32|
                  -> i32 {
-                    println!("--- host func --- strftime_l ---");
+                    smu.log("--- host func --- strftime_l ---");
                     return 0;
                 },
             ),
@@ -240,13 +248,13 @@ impl WasmStoreStub {
         fmap.insert(
             "emscripten_notify_memory_growth[1]".to_string(),
             Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>, _p1: i32| {
-                println!("--- host func --- emscripten_notify_memory_growth ---");
+                smu.log("--- host func --- emscripten_notify_memory_growth ---");
             }),
         );
         fmap.insert(
             "proc_exit[1]".to_string(),
             Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>, _p1: i32| {
-                println!("--- host func --- proc_exit ---");
+                smu.log("--- host func --- proc_exit ---");
             }),
         );
         fmap.insert(
@@ -254,14 +262,14 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32, _p3: i32| {
-                    println!("--- host func ---  __cxa_throw ---");
+                    smu.log("--- host func ---  __cxa_throw ---");
                 },
             ),
         );
         fmap.insert(
             "emscripten_date_now[0]".to_string(),
             Func::wrap(&mut _store, |_caller: Caller<'_, WasmState>| -> f64 {
-                println!("--- host func ---  emscripten_date_now ---");
+                smu.log("--- host func ---  emscripten_date_now ---");
                 return 0.0;
             }),
         );
@@ -270,7 +278,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32, _p3: i32, _p4: i32| -> i32 {
-                    println!("--- host func ---  __syscall_openat ---");
+                    smu.log("--- host func ---  __syscall_openat ---");
                     return 0;
                 },
             ),
@@ -280,7 +288,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32| -> i32 {
-                    println!("--- host func ---  __syscall_fstat64 ---");
+                    smu.log("--- host func ---  __syscall_fstat64 ---");
                     return 0;
                 },
             ),
@@ -290,7 +298,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32| -> i32 {
-                    println!("--- host func ---  __syscall_stat64 ---");
+                    smu.log("--- host func ---  __syscall_stat64 ---");
                     return 0;
                 },
             ),
@@ -300,7 +308,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32, _p3: i32, _p4: i32| -> i32 {
-                    println!("--- host func ---  __syscall_newfstatat ---");
+                    smu.log("--- host func ---  __syscall_newfstatat ---");
                     return 0;
                 },
             ),
@@ -310,7 +318,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32| -> i32 {
-                    println!("--- host func ---  __syscall_lstat64 ---");
+                    smu.log("--- host func ---  __syscall_lstat64 ---");
                     return 0;
                 },
             ),
@@ -320,7 +328,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32, _p3: i32| -> i32 {
-                    println!("--- host func ---  __syscall_fcntl64 ---");
+                    smu.log("--- host func ---  __syscall_fcntl64 ---");
                     return 0;
                 },
             ),
@@ -330,7 +338,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32, _p3: i32| -> i32 {
-                    println!("--- host func ---  __syscall_ioctl ---");
+                    smu.log("--- host func ---  __syscall_ioctl ---");
                     return 0;
                 },
             ),
@@ -340,7 +348,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32, _p3: i32| {
-                    println!("--- host func ---  __syscall_ioctl ---");
+                    smu.log("--- host func ---  __syscall_ioctl ---");
                 },
             ),
         );
@@ -349,7 +357,7 @@ impl WasmStoreStub {
             Func::wrap(
                 &mut _store,
                 |_caller: Caller<'_, WasmState>, _p1: i32, _p2: i32, _p3: i32| {
-                    println!("--- host func ---  hostoutputpush ---");
+                    smu.log("--- host func ---  hostoutputpush ---");
                 },
             ),
         );
@@ -366,7 +374,7 @@ impl WasmStoreStub {
                  _p6: i32,
                  _p7: i32|
                  -> i32 {
-                    println!("--- host func ---  _munmap_js ---");
+                    smu.log("--- host func ---  _munmap_js ---");
                     return 0;
                 },
             ),
@@ -385,7 +393,7 @@ impl WasmStoreStub {
                  _p7: i32,
                  _p8: i32|
                  -> i32 {
-                    println!("--- host func ---  _mmap_js ---");
+                    smu.log("--- host func ---  _mmap_js ---");
                     return 0;
                 },
             ),
