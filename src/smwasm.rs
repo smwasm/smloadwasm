@@ -79,9 +79,10 @@ pub fn call_wasm(sn: i32, name: &str, _input: &SmDtonBuffer) -> SmDtonBuffer {
 }
 
 fn _sm_call_outside(_input: &SmDtonBuffer) -> SmDtonBuffer {
-    let map = WS_NAM.read().unwrap();
     let smp = SmDtonReader::new(_input.get_buffer());
     let name = smp.get_string(1, USAGE).unwrap();
+
+    let map = WS_NAM.read().unwrap();
     let op = map.get(name);
     if op.is_some() {
         let sn = *op.unwrap();
@@ -93,7 +94,7 @@ fn _sm_call_outside(_input: &SmDtonBuffer) -> SmDtonBuffer {
 
 pub fn _sm_init() {
     smu.log(&format!(
-        "--- sm init --- from smloadwasm --- {} --- {} ---",
-        SM_PREFIX, "SmWasm"
+        "--- sm init --- from smloadwasm --- {} ---",
+        SM_PREFIX
     ));
 }

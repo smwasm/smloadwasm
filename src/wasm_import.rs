@@ -19,8 +19,7 @@ lazy_static! {
     };
 }
 
-pub struct WasmState {
-}
+pub struct WasmState {}
 
 pub struct WasmImportSupport {
     pub sn: usize,
@@ -101,6 +100,144 @@ impl WasmImportSupport {
         let mem = mr.into_memory().unwrap();
         mem.write(_caller, _p3 as usize, &bytes).unwrap();
 
+        return 0;
+    }
+
+    pub fn f_i_o(&self, _caller: Caller<'_, WasmState>) {
+        smu.log(&format!("--- host func --- in --- out ---"));
+    }
+
+    pub fn f_i_o_i4(&self, _caller: Caller<'_, WasmState>) -> i32 {
+        smu.log(&format!("--- host func --- in --- out i32 ---"));
+        return 0;
+    }
+
+    pub fn f_i_o_f8(&self, _caller: Caller<'_, WasmState>) -> f64 {
+        smu.log(&format!("--- host func --- in --- out i64 ---"));
+        return 0.0;
+    }
+
+    pub fn f_i_i4_o(&self, _caller: Caller<'_, WasmState>, _p1: i32) {
+        smu.log(&format!("--- host func --- in i32 --- out --- {} ---", _p1));
+    }
+
+    pub fn f_i_i4_o_i4(&self, _caller: Caller<'_, WasmState>, _p1: i32) -> i32 {
+        smu.log(&format!(
+            "--- host func --- in i32 --- out i32 --- {} ---",
+            _p1
+        ));
+        return 0;
+    }
+
+    pub fn f_i_i4_2_o_i4(&self, _caller: Caller<'_, WasmState>, _p1: i32, _p2: i32) -> i32 {
+        smu.log(&format!(
+            "--- host func --- in i32 i32 --- out i32 --- {} ---",
+            _p1
+        ));
+        return 0;
+    }
+
+    pub fn f_i_i4_3_o(&self, _caller: Caller<'_, WasmState>, _p1: i32, _p2: i32, _p3: i32) {
+        smu.log(&format!(
+            "--- host func --- in i32 i32 i32 --- out --- {} ---",
+            _p1
+        ));
+    }
+
+    pub fn f_i_i4_3_o_i4(
+        &self,
+        _caller: Caller<'_, WasmState>,
+        _p1: i32,
+        _p2: i32,
+        _p3: i32,
+    ) -> i32 {
+        smu.log(&format!(
+            "--- host func --- in i32 i32 i32 --- out i32 --- {} ---",
+            _p1
+        ));
+        return 0;
+    }
+
+    pub fn f_i_i4_4_o_i4(
+        &self,
+        _caller: Caller<'_, WasmState>,
+        _p1: i32,
+        _p2: i32,
+        _p3: i32,
+        _p4: i32,
+    ) -> i32 {
+        smu.log(&format!(
+            "--- host func --- in i32 i32 i32 i32 --- out i32 --- {} ---",
+            _p1
+        ));
+        return 0;
+    }
+
+    pub fn f_i_i4_5_o_i4(
+        &self,
+        _caller: Caller<'_, WasmState>,
+        _p1: i32,
+        _p2: i32,
+        _p3: i32,
+        _p4: i32,
+        _p5: i32,
+    ) -> i32 {
+        smu.log(&format!(
+            "--- host func --- in i32 i32 i32 i32 i32 --- out i32 --- {} ---",
+            _p1
+        ));
+        return 0;
+    }
+
+    pub fn f_i_i4_7_o_i4(
+        &self,
+        _caller: Caller<'_, WasmState>,
+        _p1: i32,
+        _p2: i32,
+        _p3: i32,
+        _p4: i32,
+        _p5: i32,
+        _p6: i32,
+        _p7: i32,
+    ) -> i32 {
+        smu.log(&format!(
+            "--- host func --- in i32 i32 i32 i32 i32 i32 i32 --- out i32 --- {} ---",
+            _p1
+        ));
+        return 0;
+    }
+
+    pub fn f_i_i4_8_o_i4(
+        &self,
+        _caller: Caller<'_, WasmState>,
+        _p1: i32,
+        _p2: i32,
+        _p3: i32,
+        _p4: i32,
+        _p5: i32,
+        _p6: i32,
+        _p7: i32,
+        _p8: i32,
+    ) -> i32 {
+        smu.log(&format!(
+            "--- host func --- in i32 i32 i32 i32 i32 i32 i32 --- out i32 --- {} ---",
+            _p1
+        ));
+        return 0;
+    }
+
+    pub fn f_i_i4_i8_i4_i4_o_i4(
+        &self,
+        _caller: Caller<'_, WasmState>,
+        _p1: i32,
+        _p2: i64,
+        _p3: i32,
+        _p4: i32,
+    ) -> i32 {
+        smu.log(&format!(
+            "--- host func --- in i32 i64 i32 i32 --- out i32 --- {} ---",
+            _p1
+        ));
         return 0;
     }
 }

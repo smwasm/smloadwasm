@@ -83,14 +83,14 @@ impl Wasm {
     fn _wasm_init(&self, sn: usize) {
         if let Some(sto) = WS_STO.get(sn) {
             if let Some(_ws) = sto {
-                let mut _store = _ws.ct.write().unwrap();
-                let stc = _store.as_context_mut();
-
                 if let Some(ina) = WS_INA.get(sn) {
                     if let Some(b) = ina {
                         let mut c = b.ct.write().unwrap();
                         if let Some(t) = c.as_mut() {
-                            let way = t.sminit.unwrap().call(stc, LOAD_WAY).unwrap();
+                            let mut _store = _ws.st.lock().unwrap();
+                            let stc = _store.as_context_mut();
+
+                            let way = t.sminit.as_mut().unwrap().call(stc, LOAD_WAY).unwrap();
                             {
                                 let mut w = WS_JSN.write().unwrap();
                                 w[sn] = way;
@@ -120,7 +120,7 @@ impl WasmInstanceStub {
         let rd = self.ct.read().unwrap();
         if let Some(ref ins) = *rd {
             let stc1 = _caller.as_context_mut();
-            let ptr_ret = ins.smcall.unwrap().call(stc1, (ptr, 1)).unwrap() as usize;
+            let ptr_ret = ins.smcall.as_ref().unwrap().call(stc1, (ptr, 1)).unwrap() as usize;
 
             if WS_UTL.is_json(ins.sn) {
                 let stc2 = _caller.as_context_mut();
@@ -128,7 +128,11 @@ impl WasmInstanceStub {
                 let ret = WS_UTL.get_buffer_text(_caller.as_context_mut(), mem, ptr_ret);
 
                 let stc3 = _caller.as_context_mut();
-                ins.smdealloc.unwrap().call(stc3, ptr_ret as i32).unwrap();
+                ins.smdealloc
+                    .as_ref()
+                    .unwrap()
+                    .call(stc3, ptr_ret as i32)
+                    .unwrap();
 
                 let jsn = json::parse(&ret).unwrap();
                 let mut sb = SmDtonBuilder::new_from_json(&jsn);
@@ -145,7 +149,11 @@ impl WasmInstanceStub {
                 }
 
                 let stc3 = _caller.as_context_mut();
-                ins.smdealloc.unwrap().call(stc3, ptr_ret as i32).unwrap();
+                ins.smdealloc
+                    .as_ref()
+                    .unwrap()
+                    .call(stc3, ptr_ret as i32)
+                    .unwrap();
                 return smb;
             }
         }
@@ -155,9 +163,15 @@ impl WasmInstanceStub {
     pub fn call(&self, ptr: i32) -> SmDtonBuffer {
         if let Some(a) = WS_STO.get(self.sn) {
             if let Some(_ws) = a {
-                let mut _store = _ws.ct.write().unwrap();
-
-                return self._do_call(_store.as_context_mut(), ptr);
+                match _ws.st.lock() {
+                    Ok(mut _store) => {
+                        return self._do_call(_store.as_context_mut(), ptr);
+                    }
+                    Err(poisoned) => {
+                        let mut _store = poisoned.into_inner();
+                        return self._do_call(_store.as_context_mut(), ptr);
+                    }
+                }
             }
         }
         return SmDtonBuffer::new();
@@ -176,7 +190,12 @@ impl WasmInstanceStub {
                 let bvo = txt.as_bytes();
 
                 let stc1 = _caller.as_context_mut();
-                let poff = ins.smalloc.unwrap().call(stc1, bvo.len() as i32).unwrap() as usize;
+                let poff = ins
+                    .smalloc
+                    .as_ref()
+                    .unwrap()
+                    .call(stc1, bvo.len() as i32)
+                    .unwrap() as usize;
 
                 let stc2 = _caller.as_context_mut();
                 let m1 = ins.instance.unwrap().get_memory(stc2, "memory");
@@ -195,7 +214,12 @@ impl WasmInstanceStub {
                 let total = nmlen + SZ::TY_NM + buf.len();
 
                 let stc1 = _caller.as_context_mut();
-                let poff = ins.smalloc.unwrap().call(stc1, total as i32).unwrap() as usize;
+                let poff = ins
+                    .smalloc
+                    .as_ref()
+                    .unwrap()
+                    .call(stc1, total as i32)
+                    .unwrap() as usize;
 
                 let stc2 = _caller.as_context_mut();
                 let m1 = ins.instance.unwrap().get_memory(stc2, "memory");
@@ -225,8 +249,19 @@ impl WasmInstanceStub {
     pub fn set_input(&self, name: &str, smb: &SmDtonBuffer) -> i32 {
         if let Some(a) = WS_STO.get(self.sn) {
             if let Some(_ws) = a {
-                let mut _store = _ws.ct.write().unwrap();
-                return self.output_memory(_store.as_context_mut(), name, smb);
+                let moff;
+                {
+                    match _ws.st.lock() {
+                        Ok(mut _store) => {
+                            moff = self.output_memory(_store.as_context_mut(), name, smb);
+                        }
+                        Err(poisoned) => {
+                            let mut _store = poisoned.into_inner();
+                            moff = self.output_memory(_store.as_context_mut(), name, smb);
+                        }
+                    }
+                }
+                return moff;
             }
         }
         return 0;
@@ -273,7 +308,7 @@ impl WasmInstance {
         let _ws = WS_STO[self.sn].as_ref().map(|x| x).unwrap();
         let _instance = _ws.get_instance(&_module);
 
-        let mut _store: std::sync::RwLockWriteGuard<'_, Store<WasmState>> = _ws.ct.write().unwrap();
+        let mut _store = _ws.st.lock().unwrap();
 
         let stc0 = _store.as_context_mut();
         let opmem = _instance.get_memory(stc0, "memory");
