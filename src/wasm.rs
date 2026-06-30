@@ -5,6 +5,8 @@ use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::sync::RwLock;
 
+use smcore::smu;
+
 use crate::wasm_import::WasmState;
 use crate::wasm_store::WS_STO;
 use crate::wasm_util::{MAX_STORE, WS_MOD, WS_UTL};
@@ -116,11 +118,25 @@ impl WasmInstanceStub {
         }
     }
 
+    fn error_buffer(name: &str, message: &str) -> SmDtonBuffer {
+        let mut smap = smdton::SmDtonMap::new();
+        smap.add_string("$usage", name);
+        smap.add_string("$panic", message);
+        smap.build()
+    }
+
     fn _do_call(&self, mut _caller: StoreContextMut<'_, WasmState>, ptr: i32) -> SmDtonBuffer {
         let rd = self.ct.read().unwrap();
         if let Some(ref ins) = *rd {
             let stc1 = _caller.as_context_mut();
-            let ptr_ret = ins.smcall.as_ref().unwrap().call(stc1, (ptr, 1)).unwrap() as usize;
+            let ptr_ret = match ins.smcall.as_ref().unwrap().call(stc1, (ptr, 1)) {
+                Ok(ptr_ret) => ptr_ret as usize,
+                Err(err) => {
+                    let message = format!("--- wasm call error --- {} --- {}", ins.path, err);
+                    smu.log(&message);
+                    return Self::error_buffer("smwasm.call", &message);
+                }
+            };
 
             if WS_UTL.is_json(ins.sn) {
                 let stc2 = _caller.as_context_mut();
@@ -128,11 +144,12 @@ impl WasmInstanceStub {
                 let ret = WS_UTL.get_buffer_text(_caller.as_context_mut(), mem, ptr_ret);
 
                 let stc3 = _caller.as_context_mut();
-                ins.smdealloc
-                    .as_ref()
-                    .unwrap()
-                    .call(stc3, ptr_ret as i32)
-                    .unwrap();
+                if let Err(err) = ins.smdealloc.as_ref().unwrap().call(stc3, ptr_ret as i32) {
+                    smu.log(&format!(
+                        "--- wasm dealloc error --- {} --- {}",
+                        ins.path, err
+                    ));
+                }
 
                 let jsn = json::parse(&ret).unwrap();
                 let mut sb = SmDtonBuilder::new_from_json(&jsn);
@@ -149,11 +166,12 @@ impl WasmInstanceStub {
                 }
 
                 let stc3 = _caller.as_context_mut();
-                ins.smdealloc
-                    .as_ref()
-                    .unwrap()
-                    .call(stc3, ptr_ret as i32)
-                    .unwrap();
+                if let Err(err) = ins.smdealloc.as_ref().unwrap().call(stc3, ptr_ret as i32) {
+                    smu.log(&format!(
+                        "--- wasm dealloc error --- {} --- {}",
+                        ins.path, err
+                    ));
+                }
                 return smb;
             }
         }
@@ -325,18 +343,18 @@ impl WasmInstance {
                         Ok(_size) => {
                             let stc3 = _store.as_context_mut();
                             let newsize = mem.size(stc3) as i32;
-                            println!(
+                            smu.log(&format!(
                                 "--- {} --- original --- {} --- new page number --- {} ---",
                                 self.path, _size, newsize
-                            );
+                            ));
                         }
                         _ => {}
                     }
                 } else {
-                    println!(
+                    smu.log(&format!(
                         "--- {} --- original page number --- {} ---",
                         self.path, msize
-                    );
+                    ));
                 }
             }
             _ => {}
@@ -370,4 +388,8 @@ impl WasmInstance {
 
         self.ready = true;
     }
+}
+
+#[cfg(test)]
+mod tests {
 }

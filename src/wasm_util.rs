@@ -5,6 +5,8 @@ use wasmtime::*;
 
 use lazy_static::lazy_static;
 
+use smcore::smu;
+
 use crate::wasm::{FL, LOAD_WAY, SZ, WS_JSN};
 use crate::wasm_import::WasmState;
 
@@ -123,7 +125,7 @@ impl WasmUtil {
                 map.insert(wasm_path.to_string(), m);
                 return true;
             } else {
-                println!("--- load wasm error --- {}", wasm_path);
+                smu.log(&format!("--- load wasm error --- {}", wasm_path));
                 map.insert(wasm_path.to_string(), None);
             }
         }
