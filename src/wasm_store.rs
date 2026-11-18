@@ -1,22 +1,13 @@
+use std::sync::LazyLock;
 use std::sync::Mutex;
-use wasmtime::*;
 
-use lazy_static::lazy_static;
+use wasmtime::*;
 
 use crate::wasm_import::{WasmState, WS_IMP};
 use crate::wasm_util::{MAX_STORE, WS_UTL};
 
-const STO_REPEAT_VALUE: Option<WasmStoreStub> = None;
-
-lazy_static! {
-    pub static ref WS_STO: [Option<WasmStoreStub>; MAX_STORE] = {
-        let mut arr: [Option<WasmStoreStub>; MAX_STORE] = [STO_REPEAT_VALUE; MAX_STORE];
-        for i in 0..MAX_STORE {
-            arr[i] = Some(WasmStoreStub::new(i));
-        }
-        arr
-    };
-}
+pub static WS_STO: LazyLock<[Option<WasmStoreStub>; MAX_STORE]> =
+    LazyLock::new(|| std::array::from_fn(|i| Some(WasmStoreStub::new(i))));
 
 pub struct WasmStoreStub {
     sn: usize,

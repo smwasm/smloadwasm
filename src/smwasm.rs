@@ -1,23 +1,43 @@
 use std::collections::HashMap;
 use std::sync::RwLock;
-
-use json::JsonValue;
-use lazy_static::lazy_static;
+use std::sync::LazyLock;
 
 use smcore::{smh, smu};
 
 use crate::wasm::{WS_ENV, WS_INA, WS_INM};
+use crate::wasm_util::WS_UTL;
 use smdton::{SmDtonBuffer, SmDtonMap, SmDtonReader};
 
-lazy_static! {
-    // $usage to sn
-    pub static ref WS_NAM: RwLock<HashMap<String, i32>> = RwLock::new(HashMap::new());
-    pub static ref JS_EMP: JsonValue = json::parse("{}").unwrap();
-}
+static WS_NAM: LazyLock<RwLock<HashMap<String, i32>>> =
+    LazyLock::new(|| RwLock::new(HashMap::new()));
 
 const SM_PREFIX: &str = "smwasm";
 const SMKER_GET_ALL: &str = "smker.get.all";
 const USAGE: &str = "$usage";
+
+pub fn compile_wasm(_wp: &str, _cwasm: &str) -> bool {
+    let wasm = match std::fs::read(_wp) {
+        Ok(wasm) => wasm,
+        Err(err) => {
+            smu.log(&format!("--- read wasm error --- {} --- {}", _wp, err));
+            return false;
+        }
+    };
+    let compiled = match WS_UTL.engine.precompile_module(&wasm) {
+        Ok(compiled) => compiled,
+        Err(err) => {
+            smu.log(&format!("--- compile wasm error --- {} --- {}", _wp, err));
+            return false;
+        }
+    };
+    match std::fs::write(_cwasm, compiled) {
+        Ok(()) => true,
+        Err(err) => {
+            smu.log(&format!("--- write cwasm error --- {} --- {}", _cwasm, err));
+            false
+        }
+    }
+}
 
 pub fn load_wasm(_wp: &str, pagenum: i32) -> bool {
     if !WS_ENV.check_instance(&_wp, pagenum) {

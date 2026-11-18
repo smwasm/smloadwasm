@@ -1,9 +1,10 @@
+use std::sync::LazyLock;
+use std::sync::RwLock;
+
 use smdton::{SmDtonBuffer, SmDtonBuilder};
 use wasmtime::*;
 
-use lazy_static::lazy_static;
 use std::collections::HashMap;
-use std::sync::RwLock;
 
 use smcore::smu;
 
@@ -11,21 +12,18 @@ use crate::wasm_import::WasmState;
 use crate::wasm_store::WS_STO;
 use crate::wasm_util::{MAX_STORE, WS_MOD, WS_UTL};
 
-const INA_REPEAT_VALUE: Option<WasmInstanceStub> = None;
 pub const LOAD_WAY: i32 = 0x100;
 
-lazy_static! {
-    pub static ref WS_ENV: Wasm = Wasm {};
-    pub static ref WS_INM: RwLock<HashMap<String, i32>> = RwLock::new(HashMap::new());
-    pub static ref WS_JSN: RwLock<[i32; MAX_STORE]> = RwLock::new([0; MAX_STORE]);
-    pub static ref WS_INA: [Option<WasmInstanceStub>; MAX_STORE] = {
-        let mut arr: [Option<WasmInstanceStub>; MAX_STORE] = [INA_REPEAT_VALUE; MAX_STORE];
-        for i in 0..MAX_STORE {
-            arr[i] = Some(WasmInstanceStub::new(i));
-        }
-        arr
-    };
-}
+pub static WS_ENV: Wasm = Wasm {};
+pub static WS_INM: LazyLock<RwLock<HashMap<String, i32>>> =
+    LazyLock::new(|| RwLock::new(HashMap::new()));
+pub static WS_JSN: RwLock<[i32; MAX_STORE]> =
+    RwLock::new([0; MAX_STORE]);
+pub static WS_INA: LazyLock<[Option<WasmInstanceStub>; MAX_STORE]> =
+    LazyLock::new(|| {
+        std::array::from_fn(|i| Some(WasmInstanceStub::new(i)))
+    });
+
 pub struct SZ {}
 
 impl SZ {

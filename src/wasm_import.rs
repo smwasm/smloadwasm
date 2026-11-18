@@ -1,23 +1,17 @@
+use std::sync::LazyLock;
+
 use smdton::SmDtonBuilder;
 use wasmtime::*;
 
-use lazy_static::lazy_static;
 use smcore::{smh, smu};
 
 use crate::wasm::WS_INA;
 use crate::wasm_util::{MAX_STORE, WS_UTL};
 
-const IMP_REPEAT_VALUE: Option<WasmImportSupport> = None;
-
-lazy_static! {
-    pub static ref WS_IMP: [Option<WasmImportSupport>; MAX_STORE] = {
-        let mut arr: [Option<WasmImportSupport>; MAX_STORE] = [IMP_REPEAT_VALUE; MAX_STORE];
-        for i in 0..MAX_STORE {
-            arr[i] = Some(WasmImportSupport::new(i));
-        }
-        arr
-    };
-}
+pub static WS_IMP: LazyLock<[Option<WasmImportSupport>; MAX_STORE]> =
+    LazyLock::new(|| {
+        std::array::from_fn(|i| Some(WasmImportSupport::new(i)))
+    });
 
 pub struct WasmState {}
 

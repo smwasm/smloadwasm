@@ -1,9 +1,9 @@
-use smdton::SmDtonBuffer;
 use std::collections::HashMap;
+use std::sync::LazyLock;
 use std::sync::RwLock;
-use wasmtime::*;
 
-use lazy_static::lazy_static;
+use smdton::SmDtonBuffer;
+use wasmtime::*;
 
 use smcore::smu;
 
@@ -60,11 +60,10 @@ macro_rules! get_buf_txt {
 
 pub const MAX_STORE: usize = 256;
 
-lazy_static! {
-    pub static ref WS_UTL: WasmUtil = WasmUtil::new();
-    pub static ref WS_SSN: RwLock<usize> = RwLock::new(0);
-    pub static ref WS_MOD: RwLock<HashMap<String, Option<Module>>> = RwLock::new(HashMap::new());
-}
+pub static WS_UTL: LazyLock<WasmUtil> = LazyLock::new(WasmUtil::new);
+pub static WS_SSN: RwLock<usize> = RwLock::new(0);
+pub static WS_MOD: LazyLock<RwLock<HashMap<String, Option<Module>>>> =
+    LazyLock::new(|| RwLock::new(HashMap::new()));
 
 pub struct WasmUtil {
     pub engine: Engine,
@@ -78,7 +77,12 @@ impl WasmUtil {
     }
 
     pub fn load(&self, wasm_path: &str) -> Option<Module> {
-        let _r = Module::from_file(&self.engine, wasm_path);
+        let _r = if wasm_path.ends_with(".cwasm") {
+            // SAFETY: .cwasm files must be trusted artifacts produced by Wasmtime.
+            unsafe { Module::deserialize_file(&self.engine, wasm_path) }
+        } else {
+            Module::from_file(&self.engine, wasm_path)
+        };
         match _r {
             Ok(_mod) => {
                 return Some(_mod);
