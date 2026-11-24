@@ -47,12 +47,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
-name = "base64"
-version = "0.23.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5"
-
-[[package]]
 name = "bitflags"
 version = "2.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -636,12 +630,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "json"
-version = "0.12.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "078e285eafdfb6c4b434e0d31e8cfcb5115b651496faca5749b88fafd4f23bfd"
-
-[[package]]
 name = "leb128fmt"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -977,32 +965,44 @@ dependencies = [
 ]
 
 [[package]]
-name = "smcore"
-version = "0.1.9"
+name = "smbase64"
+version = "0.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1450503dec531c15e07c9ec414c5e71ce796c20da8b94f76ba5857e2f72c1710"
+checksum = "43e6d1a64a2d7d871b25be16471aed23e3f5a06ba125d93bcde9ed83d575a6e9"
+
+[[package]]
+name = "smcore"
+version = "0.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eb5f2a6c9ce57c5fedef743f8e5d8337239b80847827e9d56475e61127da4684"
 dependencies = [
- "json",
  "smdton",
+ "smjson",
 ]
 
 [[package]]
 name = "smdton"
-version = "0.1.6"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f127c55f5c6e908e232cbe2a762d7cb60bdda8b343f8d116287704c4c6e724d"
+checksum = "eedc62a94305f93526fd458a6bc1a0bb07bc3293e9b56512cac53b145841d837"
 dependencies = [
- "base64 0.23.1",
- "json",
+ "smbase64",
+ "smjson",
 ]
 
 [[package]]
+name = "smjson"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "78ecae3645a6878892885453c3ae474643ded7369881617da3f02634e214ae48"
+
+[[package]]
 name = "smloadwasm"
-version = "0.1.8"
+version = "0.1.9"
 dependencies = [
- "json",
  "smcore",
  "smdton",
+ "smjson",
  "wasmtime",
 ]
 
@@ -1357,7 +1357,7 @@ version = "50.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "96e9b0120eaa3448f11673000e5c970fda5d78f3a3f35a08fd00fa9462453322"
 dependencies = [
- "base64 0.22.1",
+ "base64",
  "directories-next",
  "log",
  "postcard",

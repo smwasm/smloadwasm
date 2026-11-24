@@ -149,7 +149,7 @@ impl WasmInstanceStub {
                     ));
                 }
 
-                let jsn = json::parse(&ret).unwrap();
+                let jsn = smjson::parse(&ret).unwrap();
                 let mut sb = SmDtonBuilder::new_from_json(&jsn);
                 return sb.build();
             } else {

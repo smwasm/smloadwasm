@@ -51,7 +51,7 @@ impl WasmImportSupport {
             let calltxt = WS_UTL.get_buffer_text(_caller.as_context_mut(), mem, ptr);
 
             if calltxt.len() > 0 {
-                let callobj = json::parse(&calltxt).unwrap();
+                let callobj = smjson::parse(&calltxt).unwrap();
                 let usage = smu.get_string(&callobj, "$usage").unwrap();
                 let mut sb = SmDtonBuilder::new_from_json(&callobj);
                 let _ret = smh.call(sb.build());
